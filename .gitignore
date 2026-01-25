@@ -209,4 +209,4 @@ marimo/_lsp/
 __marimo__/
 
 venv314/
-config.py
+src/data_gen/config.py
