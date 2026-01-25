@@ -29,3 +29,5 @@ To down system:
 docker-compose down
 ```
 
+# Example:
+<img width="3179" height="1633" alt="Снимок экрана 2026-01-25 232503" src="https://github.com/user-attachments/assets/a3620ccb-9953-4aa8-8589-70d92fb8b984" />
