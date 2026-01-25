@@ -2,7 +2,7 @@ import time
 import random
 from datetime import datetime
 import psycopg2
-import config
+from src.data_gen import config
 
 PRODUCTS = [
     ("Молоко 2.5%", "Молочные продукты", 89.90),
@@ -33,25 +33,41 @@ def generate_item():
         store_address
     )
 
+def get_connection():
+    while True:
+        try:
+            conn = psycopg2.connect(**config.DB_CONFIG)
+            print("Connected to database")
+            return conn
+        except psycopg2.OperationalError as e:
+            print("Database not ready, retrying in 5 seconds...")
+            time.sleep(5)
+
+
 def main():
 
-    conn = psycopg2.connect(**config.DB_CONFIG)
+    conn = get_connection()
     cursor = conn.cursor()
 
     while True:
         data = generate_item()
 
-        cursor.execute(
-            """
-            INSERT INTO receipt_items
-            (timestamp, product_name, category, price, quantity, store_address)
-            VALUES (%s, %s, %s, %s, %s, %s)
-            """,
-            data
-        )
+        try:
+            cursor.execute(
+                """
+                INSERT INTO receipt_items
+                (timestamp, product_name, category, price, quantity, store_address)
+                VALUES (%s, %s, %s, %s, %s, %s)
+                """,
+                data
+            )
+            conn.commit()
 
-        conn.commit()
+        except Exception as e:
+            print("Insert failed:", e)
+            conn.rollback()
         time.sleep(1)
+
 
 if __name__ == "__main__":
     main()

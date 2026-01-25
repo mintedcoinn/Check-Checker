@@ -3,5 +3,5 @@ DB_CONFIG = {
     "user": "",
     "password": "",
     "host": "",
-    "port": 0000
+    "port": 5432
 }
