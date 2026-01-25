@@ -1,18 +1,69 @@
-generator:
-  build:
-    context: ./src/data_gen
-  container_name: data_generator
-  depends_on:
-    - db
-  environment:
-    DB_HOST: db
-    DB_PORT: 5432
-    DB_NAME: analytics
-    DB_USER: postgres
-    DB_PASSWORD: analytics_pass
-  restart: always
+services:
+  analytics_db:
+    image: postgres:18
+    container_name: analytics_db
+    environment:
+      POSTGRES_DB: analytics
+      POSTGRES_USER: analytics_user
+      POSTGRES_PASSWORD: analytics_pass
+    volumes:
+      - analytics_pgdata:/var/lib/postgresql/data
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
 
-db:
-  image: postgres:18
-  volumes:
-  - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+  generator:
+    build:
+      context: ./src/data_gen
+    container_name: data_generator
+    depends_on:
+      - analytics_db
+    restart: always
+
+  redis:
+    image: redis:7
+    container_name: redash_redis
+
+  redash_postgres:
+    image: postgres:18
+    container_name: redash_postgres
+    environment:
+      POSTGRES_DB: redash
+      POSTGRES_USER: redash
+      POSTGRES_PASSWORD: redash
+    volumes:
+      - redash_pgdata:/var/lib/postgresql/data
+
+  redash_server:
+    image: redash/redash:latest
+    container_name: redash_server
+    command: server
+    depends_on:
+      - redis
+      - redash_postgres
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./env
+
+  redash_worker:
+    image: redash/redash:latest
+    container_name: redash_worker
+    command: worker
+    depends_on:
+      - redis
+      - redash_postgres
+    env_file:
+      - ./env
+
+  redash_scheduler:
+    image: redash/redash:latest
+    container_name: redash_scheduler
+    command: scheduler
+    depends_on:
+      - redis
+      - redash_postgres
+    env_file:
+      - ./env
+
+volumes:
+  analytics_pgdata:
+  redash_pgdata:

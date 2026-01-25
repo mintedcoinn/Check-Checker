@@ -2,7 +2,6 @@ import time
 import random
 from datetime import datetime
 import psycopg2
-import config
 
 PRODUCTS = [
     ("Молоко 2.5%", "Молочные продукты", 89.90),
@@ -36,7 +35,14 @@ def generate_item():
 def get_connection():
     while True:
         try:
-            conn = psycopg2.connect(**config.DB_CONFIG)
+            conn = psycopg2.connect(psycopg2.connect(
+    host="analytics_db",
+    port=5432,
+    dbname="analytics",
+    user="analytics_user",
+    password="analytics_pass"
+        )
+    )
             print("Connected to database")
             return conn
         except psycopg2.OperationalError as e:
