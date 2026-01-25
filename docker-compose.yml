@@ -1,5 +1,5 @@
 services:
-  analytics_db:
+  postgres:
     image: postgres:18
     container_name: analytics_db
     environment:
@@ -15,15 +15,15 @@ services:
       context: ./src/data_gen
     container_name: data_generator
     depends_on:
-      - analytics_db
+      - postgres
     restart: always
 
-  redis:
+  redash_redis:
     image: redis:7
     container_name: redash_redis
 
   redash_postgres:
-    image: postgres:18
+    image: postgres:15
     container_name: redash_postgres
     environment:
       POSTGRES_DB: redash
@@ -37,7 +37,8 @@ services:
     container_name: redash_server
     command: server
     depends_on:
-      - redis
+      - redash_redis
+      - postgres
       - redash_postgres
     ports:
       - "5000:5000"
@@ -49,7 +50,8 @@ services:
     container_name: redash_worker
     command: worker
     depends_on:
-      - redis
+      - postgres
+      - redash_redis
       - redash_postgres
     env_file:
       - ./env
@@ -59,7 +61,8 @@ services:
     container_name: redash_scheduler
     command: scheduler
     depends_on:
-      - redis
+      - postgres
+      - redash_redis
       - redash_postgres
     env_file:
       - ./env
