@@ -1,7 +1,9 @@
-FROM Python3.13-slim
+FROM python:3.13-slim
 
 WORKDIR /app
 
-COPY generator.py
+COPY . .
+
+RUN pip install psycopg2-binary
 
 CMD ["python", "generator.py"]

@@ -2,7 +2,7 @@ import time
 import random
 from datetime import datetime
 import psycopg2
-from src.data_gen import config
+import config
 
 PRODUCTS = [
     ("Молоко 2.5%", "Молочные продукты", 89.90),

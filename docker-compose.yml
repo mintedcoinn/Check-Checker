@@ -1,0 +1,18 @@
+generator:
+  build:
+    context: ./src/data_gen
+  container_name: data_generator
+  depends_on:
+    - db
+  environment:
+    DB_HOST: db
+    DB_PORT: 5432
+    DB_NAME: analytics
+    DB_USER: postgres
+    DB_PASSWORD: analytics_pass
+  restart: always
+
+db:
+  image: postgres:18
+  volumes:
+  - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
