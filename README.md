@@ -16,18 +16,30 @@ docker-compose up -d
 
 docker-compose exec redash_server /app/bin/docker-entrypoint create_db
 
-docker-compose restart redash_server redash_worker redash_scheduler
 ```
 ## Open browser and put:
 ```
 localhost:5000
 ```
-Create admin-user in Redash and u can work in it.
-
-To down system:
+DB type:
 ```
-docker-compose down
+PostegreSQL
 ```
-
+Host:
+```
+postgres
+```
+User:
+```
+analytics_user
+```
+Password:
+```
+analytics_pass
+```
+DB name:
+```
+analytics
+```
 # Example:
 <img width="3179" height="1633" alt="Снимок экрана 2026-01-25 232503" src="https://github.com/user-attachments/assets/a3620ccb-9953-4aa8-8589-70d92fb8b984" />
