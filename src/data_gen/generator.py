@@ -35,14 +35,14 @@ def generate_item():
 def get_connection():
     while True:
         try:
-            conn = psycopg2.connect(psycopg2.connect(
-    host="analytics_db",
-    port=5432,
-    dbname="analytics",
-    user="analytics_user",
-    password="analytics_pass"
-        )
-    )
+            conn = psycopg2.connect(
+                host="postgres",
+                port=5432,
+                dbname="analytics",
+                user="analytics_user",
+                password="analytics_pass"
+            )
+
             print("Connected to database")
             return conn
         except psycopg2.OperationalError as e:
@@ -54,15 +54,16 @@ def main():
 
     conn = get_connection()
     cursor = conn.cursor()
-
-    while True:
+    counter = 1000
+    while counter:
+        counter -= 1
         data = generate_item()
-
+        
         try:
             cursor.execute(
                 """
                 INSERT INTO receipt_items
-                (timestamp, product_name, category, price, quantity, store_address)
+                (created_at, product_name, category, price, quantity, store_address)
                 VALUES (%s, %s, %s, %s, %s, %s)
                 """,
                 data
@@ -73,6 +74,7 @@ def main():
             print("Insert failed:", e)
             conn.rollback()
         time.sleep(1)
+
 
 
 if __name__ == "__main__":

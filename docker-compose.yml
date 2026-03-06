@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:18
+    image: postgres:15
     container_name: analytics_db
     environment:
       POSTGRES_DB: analytics
@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: analytics_pass
     volumes:
       - analytics_pgdata:/var/lib/postgresql/data
-      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./sql:/docker-entrypoint-initdb.d
 
   generator:
     build:
